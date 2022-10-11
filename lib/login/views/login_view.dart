@@ -1,3 +1,4 @@
+import 'package:authentication_repository/authentication_repository.dart';
 import 'package:fitbuds/auth/auth.dart';
 import 'package:fitbuds/auth/bloc/auth_bloc.dart';
 import 'package:fitbuds/login/login.dart';
@@ -91,29 +92,30 @@ class _LoginViewState extends State<LoginView> {
                             password: _passwordController.text,
                             name: _nameController.text,
                             email: _emailController.text,
+                            isNewUser: true,
                           ),
                         )
                       : BlocProvider.of<AuthBloc>(context).add(
                           Authenticate(
-                            username: _usernameController.text,
+                            email: _usernameController.text,
                             password: _passwordController.text,
                           ),
                         ),
                 ),
                 FitButton(
                   text: 'Signin',
-                  onPressed: () =>
-                      _repo.signin(username: 'username', password: 'password'),
+                  onPressed: () => _repo.signInWithEmailAndPassword(
+                      email: 'username', password: 'password'),
                 ),
                 FitButton(
                   text: 'Add Users',
-                  onPressed: () => _repo.signup(
-                      name: 'name',
-                      email: 'email',
-                      username: 'username',
-                      password: 'password'),
+                  onPressed: () => _repo.createUserWithEmailAndPassword(
+                      email: 'email', password: 'password'),
                 ),
-                FitButton(text: 'Clear', onPressed: () => _repo.clearUsers())
+                FitButton(
+                  text: 'Clear',
+                  onPressed: () => context.read<AuthBloc>().add(ClearUsers()),
+                )
               ],
             ),
           ),

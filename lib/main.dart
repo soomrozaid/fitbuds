@@ -1,3 +1,4 @@
+import 'package:authentication_repository/authentication_repository.dart';
 import 'package:fitbuds/auth/auth.dart';
 import 'package:fitbuds/login/login.dart';
 import 'package:fitbuds/home/views/home_screen.dart';
@@ -7,13 +8,18 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 main() {
   // Bloc.observer = AuthObserver();
   // Bloc.observer = LoginObserver();
-  runApp(const App());
+  runApp(App());
 }
 
 class App extends MaterialApp {
-  const App({Key? key})
+  App({Key? key})
       : super(
-            key: key, debugShowCheckedModeBanner: false, home: const AppView());
+            key: key,
+            debugShowCheckedModeBanner: false,
+            home: RepositoryProvider(
+              create: (context) => AuthenticationRepository(),
+              child: const AppView(),
+            ));
 }
 
 class AppView extends StatelessWidget {
@@ -23,7 +29,8 @@ class AppView extends StatelessWidget {
   Widget build(BuildContext context) {
     return MultiBlocProvider(providers: [
       BlocProvider<AuthBloc>(
-        create: (BuildContext context) => AuthBloc(),
+        create: (BuildContext context) =>
+            AuthBloc(context.read<AuthenticationRepository>()),
       ),
       BlocProvider<LoginBloc>(
         create: (BuildContext context) => LoginBloc(),
@@ -42,7 +49,9 @@ class AuthWrapper extends StatelessWidget {
         if (state is AuthenticatedState) {
           return const HomeScreen();
         } else if (state is UnauthenticatedState) {
-          return LoginPage(errorMessage: state.error,);
+          return LoginPage(
+            errorMessage: state.error,
+          );
         } else {
           return const LoginPage();
         }
