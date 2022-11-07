@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:developer';
 
 import 'package:authentication_repository/authentication_repository.dart';
 import 'package:bloc/bloc.dart';
@@ -13,51 +14,27 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
   final AuthenticationRepository _authRepo;
   AuthBloc(this._authRepo) : super(AuthInitial()) {
     on<Authenticate>((event, emit) async {
-      SharedPreferences _sharedPrefs = await SharedPreferences.getInstance();
-
+      emit(LoadingState());
+      AuthResponse _response;
       if (event.isNewUser) {
-
-        List<String>? _users = _sharedPrefs.getStringList('users')?? <String>[];
-
-        Map<String, String> _user = {
-          'name': event.name ?? 'no name',
-          'username': event.username ?? 'no username',
-          'email': event.email,
-          'password': event.password,
-        };
-
-        _users.add(jsonEncode(_user));
-
-        _sharedPrefs.setStringList('users', _users);
-
-        await _authRepo.createUserWithEmailAndPassword(
-                email: event.email, password: event.password)
+        _response = await _authRepo.createUserWithEmailAndPassword(
+            email: event.email, password: event.password);
+        _response.isAuthenticated
             ? emit(AuthenticatedState())
             : emit(UnauthenticatedState());
       } else {
-        // List<String>? _users = _sharedPrefs.getString('users') as List<String>;
-
-        // if (_users.isNotEmpty && _users.contains(event.email)) {
-        await _authRepo.signInWithEmailAndPassword(
-                email: event.email, password: event.password)
+        _response = await _authRepo.signInWithEmailAndPassword(
+            email: event.email, password: event.password);
+        _response.isAuthenticated
             ? emit(AuthenticatedState())
             : emit(UnauthenticatedState());
-        // } else {
-        //   emit(UnauthenticatedState(error: 'User not found!'));
-        // }
       }
-      // event.isNewUser
-      //     ? await _authRepo.createUserWithEmailAndPassword(
-      //             email: event.email, password: event.password)
-      //         ? emit(AuthenticatedState())
-      //         : emit(UnauthenticatedState())
-      //     : await _authRepo.signInWithEmailAndPassword(
-      //             email: event.password, password: event.password)
-      //         ? emit(AuthenticatedState())
-      //         : emit(UnauthenticatedState());
+      print(_response.logs);
     });
 
-    on<Unauthenticate>(((event, emit) {
+    on<Unauthenticate>(((event, emit) async {
+      emit(LoadingState());
+      await Future.delayed(const Duration(seconds: 5));
       emit(UnauthenticatedState());
     }));
 

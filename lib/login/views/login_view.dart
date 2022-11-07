@@ -103,15 +103,24 @@ class _LoginViewState extends State<LoginView> {
                         ),
                 ),
                 FitButton(
-                  text: 'Signin',
-                  onPressed: () => _repo.signInWithEmailAndPassword(
-                      email: 'username', password: 'password'),
+                  text: 'Preset Login',
+                  onPressed: () => context.read<AuthBloc>().add(
+                        Authenticate(
+                          password: 'Soomro.1',
+                          email: 'soomrozaid@gmail.com',
+                        ),
+                      ),
                 ),
-                FitButton(
-                  text: 'Add Users',
-                  onPressed: () => _repo.createUserWithEmailAndPassword(
-                      email: 'email', password: 'password'),
-                ),
+                // FitButton(
+                //   text: 'Signin',
+                //   onPressed: () => _repo.signInWithEmailAndPassword(
+                //       email: 'username', password: 'password'),
+                // ),
+                // FitButton(
+                //   text: 'Add Users',
+                //   onPressed: () => _repo.createUserWithEmailAndPassword(
+                //       email: 'email', password: 'password'),
+                // ),
                 FitButton(
                   text: 'Clear',
                   onPressed: () => context.read<AuthBloc>().add(ClearUsers()),

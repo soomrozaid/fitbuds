@@ -12,3 +12,5 @@ class UnauthenticatedState extends AuthState {
 
   UnauthenticatedState({this.error});
 }
+
+class LoadingState extends AuthState {}

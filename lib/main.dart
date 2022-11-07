@@ -1,9 +1,11 @@
 import 'package:authentication_repository/authentication_repository.dart';
 import 'package:fitbuds/auth/auth.dart';
+import 'package:fitbuds/loading/loading.dart';
 import 'package:fitbuds/login/login.dart';
 import 'package:fitbuds/home/views/home_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 main() {
   // Bloc.observer = AuthObserver();
@@ -12,12 +14,15 @@ main() {
 }
 
 class App extends MaterialApp {
+  static final Future<SharedPreferences> _sharedPreferences =
+      SharedPreferences.getInstance();
   App({Key? key})
       : super(
             key: key,
             debugShowCheckedModeBanner: false,
             home: RepositoryProvider(
-              create: (context) => AuthenticationRepository(),
+              create: (context) => AuthenticationRepository.sharedPreferences(
+                  _sharedPreferences),
               child: const AppView(),
             ));
 }
@@ -52,6 +57,8 @@ class AuthWrapper extends StatelessWidget {
           return LoginPage(
             errorMessage: state.error,
           );
+        } else if (state is LoadingState) {
+          return const LoadingView();
         } else {
           return const LoginPage();
         }

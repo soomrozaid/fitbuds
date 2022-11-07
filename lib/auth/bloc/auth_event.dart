@@ -17,3 +17,5 @@ class Authenticate extends AuthEvent {
 class Unauthenticate extends AuthEvent {}
 
 class ClearUsers extends AuthEvent {}
+
+class ListUsers extends AuthEvent {}
