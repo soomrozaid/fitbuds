@@ -1,0 +1,15 @@
+{
+  "dev": {
+    "awscloudformation": {
+      "AuthRoleName": "amplify-fitbuds-dev-233820-authRole",
+      "UnauthRoleArn": "arn:aws:iam::273855708222:role/amplify-fitbuds-dev-233820-unauthRole",
+      "AuthRoleArn": "arn:aws:iam::273855708222:role/amplify-fitbuds-dev-233820-authRole",
+      "Region": "us-east-1",
+      "DeploymentBucketName": "amplify-fitbuds-dev-233820-deployment",
+      "UnauthRoleName": "amplify-fitbuds-dev-233820-unauthRole",
+      "StackName": "amplify-fitbuds-dev-233820",
+      "StackId": "arn:aws:cloudformation:us-east-1:273855708222:stack/amplify-fitbuds-dev-233820/64c719a0-5e5e-11ed-a6df-0ec5afcb98db",
+      "AmplifyAppId": "ddaaj8ptkgz79"
+    }
+  }
+}
