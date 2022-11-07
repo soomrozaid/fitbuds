@@ -19,18 +19,30 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       if (event.isNewUser) {
         _response = await _authRepo.createUserWithEmailAndPassword(
             email: event.email, password: event.password);
-        _response.isAuthenticated
-            ? emit(AuthenticatedState())
-            : emit(UnauthenticatedState());
+        print(_response.nextStep);
+        _response.nextStep
+            ? emit(ConfirmCredentialsState(event.username ?? event.email))
+            : _response.isAuthenticated
+                ? emit(AuthenticatedState())
+                : emit(UnauthenticatedState());
       } else {
         _response = await _authRepo.signInWithEmailAndPassword(
             email: event.email, password: event.password);
         _response.isAuthenticated
             ? emit(AuthenticatedState())
-            : emit(UnauthenticatedState());
+            : emit(UnauthenticatedState(error: 'Something went wrong'));
       }
       print(_response.logs);
     });
+
+    on<ConfirmCredentials>(((event, emit) async {
+      emit(LoadingState());
+      AuthResponse _response = await _authRepo.confirmSignUp(
+          username: event.username, confirmationCode: event.confirmationCode);
+      _response.isAuthenticated
+          ? emit(AuthenticatedState())
+          : emit(UnauthenticatedState(error: 'Something went wrong!'));
+    }));
 
     on<Unauthenticate>(((event, emit) async {
       emit(LoadingState());

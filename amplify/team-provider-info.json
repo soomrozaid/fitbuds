@@ -10,6 +10,11 @@
       "StackName": "amplify-fitbuds-dev-233820",
       "StackId": "arn:aws:cloudformation:us-east-1:273855708222:stack/amplify-fitbuds-dev-233820/64c719a0-5e5e-11ed-a6df-0ec5afcb98db",
       "AmplifyAppId": "ddaaj8ptkgz79"
+    },
+    "categories": {
+      "auth": {
+        "fitbudsd9948b5c": {}
+      }
     }
   }
 }

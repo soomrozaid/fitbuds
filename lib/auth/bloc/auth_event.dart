@@ -11,7 +11,19 @@ class Authenticate extends AuthEvent {
   final String password;
 
   Authenticate(
-      {this.username, required this.password, this.name, required this.email, this.isNewUser = false});
+      {this.username,
+      required this.password,
+      this.name,
+      required this.email,
+      this.isNewUser = false});
+}
+
+class ConfirmCredentials extends AuthEvent {
+  final String username;
+  final String confirmationCode;
+
+  ConfirmCredentials(
+      {required this.username, required this.confirmationCode});
 }
 
 class Unauthenticate extends AuthEvent {}

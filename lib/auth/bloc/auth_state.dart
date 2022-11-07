@@ -13,4 +13,10 @@ class UnauthenticatedState extends AuthState {
   UnauthenticatedState({this.error});
 }
 
+class ConfirmCredentialsState extends AuthState {
+  final String username;
+
+  ConfirmCredentialsState(this.username);
+}
+
 class LoadingState extends AuthState {}

@@ -1,5 +1,9 @@
+import 'package:amplify_auth_cognito/amplify_auth_cognito.dart';
+import 'package:amplify_flutter/amplify_flutter.dart';
 import 'package:authentication_repository/authentication_repository.dart';
+import 'package:fitbuds/amplifyconfiguration.dart';
 import 'package:fitbuds/auth/auth.dart';
+import 'package:fitbuds/confirmation/confirmation.dart';
 import 'package:fitbuds/loading/loading.dart';
 import 'package:fitbuds/login/login.dart';
 import 'package:fitbuds/home/views/home_screen.dart';
@@ -14,21 +18,55 @@ main() {
 }
 
 class App extends MaterialApp {
-  static final Future<SharedPreferences> _sharedPreferences =
-      SharedPreferences.getInstance();
-  App({Key? key})
+  const App({Key? key})
       : super(
-            key: key,
-            debugShowCheckedModeBanner: false,
-            home: RepositoryProvider(
-              create: (context) => AuthenticationRepository.sharedPreferences(
-                  _sharedPreferences),
-              child: const AppView(),
-            ));
+            key: key, debugShowCheckedModeBanner: false, home: const AppView());
 }
 
-class AppView extends StatelessWidget {
+class AppView extends StatefulWidget {
   const AppView({Key? key}) : super(key: key);
+
+  @override
+  State<AppView> createState() => _AppViewState();
+}
+
+class _AppViewState extends State<AppView> {
+  bool _isLoading = true;
+
+  @override
+  void initState() {
+    _initializeApp();
+
+    super.initState();
+  }
+
+  Future<void> _initializeApp() async {
+    await _configure();
+
+    setState(() {
+      _isLoading = false;
+    });
+  }
+
+  Future<void> _configure() async {
+    await Amplify.addPlugins(<AmplifyPluginInterface>[AmplifyAuthCognito()]);
+
+    await Amplify.configure(amplifyconfig);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    if (!_isLoading) {
+      return RepositoryProvider(
+          create: (context) => AuthenticationRepository.amplify(Amplify),
+          child: const BlocWrapper());
+    }
+    return const LoadingView();
+  }
+}
+
+class BlocWrapper extends StatelessWidget {
+  const BlocWrapper({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -59,6 +97,8 @@ class AuthWrapper extends StatelessWidget {
           );
         } else if (state is LoadingState) {
           return const LoadingView();
+        } else if (state is ConfirmCredentialsState) {
+          return ConfirmationView(username: state.username);
         } else {
           return const LoginPage();
         }
