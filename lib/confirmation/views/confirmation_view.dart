@@ -18,6 +18,7 @@ class ConfirmationView extends StatelessWidget {
     return Scaffold(
       body: SafeArea(
           child: Column(
+        mainAxisAlignment: MainAxisAlignment.end,
         children: [
           FitTextField(
             controller: _controller,
@@ -26,7 +27,12 @@ class ConfirmationView extends StatelessWidget {
                 .add(ChangeConfirmationCode(value)),
             focusNode: _focusNode,
           ),
+          FitButton.text(
+            text: 'Resend the code',
+              onPressed: () => BlocProvider.of<AuthBloc>(context)
+                  .add(ResentConfirmationCode(username))),
           FitButton(
+              text: 'Submit',
               onPressed: () => BlocProvider.of<AuthBloc>(context).add(
                   ConfirmCredentials(
                       username: username, confirmationCode: _controller.text)))

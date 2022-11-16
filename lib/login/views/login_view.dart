@@ -34,13 +34,53 @@ class _LoginViewState extends State<LoginView> {
 
   final AuthenticationRepository _repo = AuthenticationRepository();
 
+  final GlobalKey<ScaffoldMessengerState> _scaffoldState =
+      GlobalKey<ScaffoldMessengerState>();
+
   bool isNewUser = false;
+  String? error;
+
+  @override
+  void initState() {
+    error = widget.errorMessage;
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       // key: _scaffoldState,
       body: Builder(builder: (context) {
+        print(error);
+        error != null
+            ? WidgetsBinding.instance.addPostFrameCallback((timeStamp) => {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      key: _scaffoldState,
+                      duration: const Duration(seconds: 5),
+                      content: FitText(
+                        error!,
+                        fontSize: 20,
+                      ),
+                      elevation: 3,
+                      action: SnackBarAction(
+                        label: 'OK',
+                        textColor: Colors.white,
+                        onPressed: () => {
+                          _scaffoldState.currentState?.hideCurrentSnackBar(),
+                          setState(() {
+                            error = null;
+                          })
+                        },
+                      ),
+                    ),
+                  ),
+                  setState(() {
+                    error = null;
+                  })
+                })
+            : null;
+        print(error);
         return SafeArea(
           child: Center(
             child: Column(
@@ -83,6 +123,18 @@ class _LoginViewState extends State<LoginView> {
                           .add(ChangeLogin(passowrd: _passwordController.text)),
                   hintText: 'Password',
                 ),
+                FitButton.text(
+                  onPressed: () {
+                    if (_usernameController.text.isEmpty) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                         SnackBar(content: const FitText('Username cannot be empty!', fontSize: 20,), action: SnackBarAction(label: 'OK', textColor: Colors.white, onPressed: () => _scaffoldState.currentState?.clearSnackBars()),));
+                    } else {
+                      BlocProvider.of<AuthBloc>(context)
+                          .add(ForgetPassword(_usernameController.text));
+                    }
+                  },
+                  text: 'Forget Password?',
+                ),
                 FitButton(
                   text: isNewUser ? 'Signup' : 'Login',
                   onPressed: () => isNewUser
@@ -97,7 +149,8 @@ class _LoginViewState extends State<LoginView> {
                         )
                       : BlocProvider.of<AuthBloc>(context).add(
                           Authenticate(
-                            email: _usernameController.text,
+                            username: _usernameController.text,
+                            // email: _emailController.text,
                             password: _passwordController.text,
                           ),
                         ),
@@ -106,21 +159,13 @@ class _LoginViewState extends State<LoginView> {
                   text: 'Preset Login',
                   onPressed: () => context.read<AuthBloc>().add(
                         Authenticate(
-                          password: 'Soomro.1',
-                          email: 'soomrozaid@gmail.com',
-                        ),
+                            password: 'Soomro.1',
+                            email: 'soomrozaid@gmail.com',
+                            username: 'zaid',
+                            name: 'Zaid',
+                            isNewUser: isNewUser),
                       ),
                 ),
-                // FitButton(
-                //   text: 'Signin',
-                //   onPressed: () => _repo.signInWithEmailAndPassword(
-                //       email: 'username', password: 'password'),
-                // ),
-                // FitButton(
-                //   text: 'Add Users',
-                //   onPressed: () => _repo.createUserWithEmailAndPassword(
-                //       email: 'email', password: 'password'),
-                // ),
                 FitButton(
                   text: 'Clear',
                   onPressed: () => context.read<AuthBloc>().add(ClearUsers()),
@@ -148,7 +193,7 @@ class _LoginViewState extends State<LoginView> {
             onChanged: (String value) => BlocProvider.of<LoginBloc>(context)
                 .add(ChangeLogin(username: _usernameController.text)),
             hintText: 'Email',
-          )
+          ),
         ]
       : null;
 }

@@ -6,7 +6,8 @@ import 'package:fitbuds/auth/auth.dart';
 import 'package:fitbuds/confirmation/confirmation.dart';
 import 'package:fitbuds/loading/loading.dart';
 import 'package:fitbuds/login/login.dart';
-import 'package:fitbuds/home/views/home_screen.dart';
+import 'package:fitbuds/home/home.dart';
+import 'package:fitbuds/password_reset/password_reset.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -73,11 +74,17 @@ class BlocWrapper extends StatelessWidget {
     return MultiBlocProvider(providers: [
       BlocProvider<AuthBloc>(
         create: (BuildContext context) =>
-            AuthBloc(context.read<AuthenticationRepository>()),
+            AuthBloc(context.read<AuthenticationRepository>())..add(InitializeAuth()),
       ),
       BlocProvider<LoginBloc>(
         create: (BuildContext context) => LoginBloc(),
       ),
+      BlocProvider<ConfirmationBloc>(
+        create: (BuildContext context) => ConfirmationBloc(),
+      ),
+      BlocProvider<PasswordResetBloc>(
+        create: (BuildContext context) => PasswordResetBloc(),
+      )
     ], child: const AuthWrapper());
   }
 }
@@ -99,6 +106,8 @@ class AuthWrapper extends StatelessWidget {
           return const LoadingView();
         } else if (state is ConfirmCredentialsState) {
           return ConfirmationView(username: state.username);
+        } else if (state is ResetPasswordState) {
+          return PasswordResetScreen(username: state.username,);
         } else {
           return const LoginPage();
         }

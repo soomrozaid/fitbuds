@@ -19,4 +19,10 @@ class ConfirmCredentialsState extends AuthState {
   ConfirmCredentialsState(this.username);
 }
 
+class ResetPasswordState extends AuthState {
+  final String? username;
+
+  ResetPasswordState({this.username});
+}
+
 class LoadingState extends AuthState {}
