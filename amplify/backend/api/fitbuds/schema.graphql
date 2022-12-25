@@ -1,0 +1,72 @@
+enum Equipment {
+  DUMBBELL
+  BUTTERFLY_PRESS
+  BENCH_PRESS
+  TRADEMILL
+  EXERCYCLE
+}
+
+type UserGym {
+  gymId: ID
+  location: String
+  membershipPlan: String
+}
+
+type Gym @model @auth(rules: [{allow: public}]) {
+  id: ID!
+  name: String
+  locations: [String]
+  website: AWSURL
+  contact: AWSPhone
+  equipment: [Equipment]
+  membershipsPlans: [String]
+}
+
+enum City {
+  SASKATOON
+  REGINA
+}
+
+enum Gender {
+  MALE
+  FEMALE
+  OTHER
+}
+
+enum ActivityType {
+  LOGIN
+  FOLLOWED_USER
+  LOGGED_OUT
+  UPDATED_PROFILE
+  CREATED_ACCOUNT
+}
+
+type ActivityLog {
+  id: ID!
+  type: ActivityType
+  desc: String
+  timestamp: AWSDateTime
+}
+
+type Profile {
+  firstName: String
+  lastName: String
+  dateOfBirth: AWSDate
+  gender: Gender
+  location: City
+  gym: UserGym
+  friends: [ID]
+}
+
+type User @model @auth(rules: [{allow: public, operations: [read, create, update]}, {allow: owner, operations: [create, read, update]}]) {
+  id: ID!
+  username: String
+  email: AWSEmail
+  profile: Profile
+  isProfileComplete: Boolean
+  updates: [AWSDateTime]
+  logins: [AWSDateTime]
+  activityLogs: [ActivityLog]
+  createdAt: AWSDateTime
+}
+ 

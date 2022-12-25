@@ -1,4 +1,6 @@
+import 'package:amplify_api/amplify_api.dart';
 import 'package:amplify_auth_cognito/amplify_auth_cognito.dart';
+import 'package:amplify_datastore/amplify_datastore.dart';
 import 'package:amplify_flutter/amplify_flutter.dart';
 import 'package:authentication_repository/authentication_repository.dart';
 import 'package:fitbuds/amplifyconfiguration.dart';
@@ -10,12 +12,12 @@ import 'package:fitbuds/home/home.dart';
 import 'package:fitbuds/password_reset/password_reset.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+import 'package:user_repository/user_repository.dart';
 
 main() {
   // Bloc.observer = AuthObserver();
   // Bloc.observer = LoginObserver();
-  runApp(App());
+  runApp(const App());
 }
 
 class App extends MaterialApp {
@@ -50,7 +52,11 @@ class _AppViewState extends State<AppView> {
   }
 
   Future<void> _configure() async {
-    await Amplify.addPlugins(<AmplifyPluginInterface>[AmplifyAuthCognito()]);
+    await Amplify.addPlugins(<AmplifyPluginInterface>[
+      AmplifyAuthCognito(),
+      AmplifyDataStore(modelProvider: ModelProvider.instance),
+      AmplifyAPI(),
+    ]);
 
     await Amplify.configure(amplifyconfig);
   }
@@ -58,9 +64,13 @@ class _AppViewState extends State<AppView> {
   @override
   Widget build(BuildContext context) {
     if (!_isLoading) {
-      return RepositoryProvider(
-          create: (context) => AuthenticationRepository.amplify(Amplify),
-          child: const BlocWrapper());
+      return MultiRepositoryProvider(providers: [
+        RepositoryProvider<AuthenticationRepository>(
+            create: (BuildContext context) =>
+                AuthenticationRepository(amplify: Amplify)),
+        RepositoryProvider<UserRepository>(
+            create: (BuildContext context) => UserRepository(amplify: Amplify)),
+      ], child: const BlocWrapper());
     }
     return const LoadingView();
   }
@@ -73,8 +83,10 @@ class BlocWrapper extends StatelessWidget {
   Widget build(BuildContext context) {
     return MultiBlocProvider(providers: [
       BlocProvider<AuthBloc>(
-        create: (BuildContext context) =>
-            AuthBloc(context.read<AuthenticationRepository>())..add(InitializeAuth()),
+        create: (BuildContext context) => AuthBloc(
+            context.read<AuthenticationRepository>(),
+            context.read<UserRepository>())
+          ..add(InitializeAuth()),
       ),
       BlocProvider<LoginBloc>(
         create: (BuildContext context) => LoginBloc(),
@@ -107,7 +119,9 @@ class AuthWrapper extends StatelessWidget {
         } else if (state is ConfirmCredentialsState) {
           return ConfirmationView(username: state.username);
         } else if (state is ResetPasswordState) {
-          return PasswordResetScreen(username: state.username,);
+          return PasswordResetScreen(
+            username: state.username,
+          );
         } else {
           return const LoginPage();
         }

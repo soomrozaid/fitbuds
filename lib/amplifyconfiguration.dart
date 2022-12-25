@@ -9,6 +9,27 @@ const amplifyconfig = ''' {
                 "IdentityManager": {
                     "Default": {}
                 },
+                "AppSync": {
+                    "Default": {
+                        "ApiUrl": "https://z2t3lfm4kzazvnq7kulokbi77y.appsync-api.us-east-1.amazonaws.com/graphql",
+                        "Region": "us-east-1",
+                        "AuthMode": "API_KEY",
+                        "ApiKey": "da2-dy6denwljvg3vfn6vey73zx4mm",
+                        "ClientDatabasePrefix": "fitbuds_API_KEY"
+                    },
+                    "fitbuds_AWS_IAM": {
+                        "ApiUrl": "https://z2t3lfm4kzazvnq7kulokbi77y.appsync-api.us-east-1.amazonaws.com/graphql",
+                        "Region": "us-east-1",
+                        "AuthMode": "AWS_IAM",
+                        "ClientDatabasePrefix": "fitbuds_AWS_IAM"
+                    },
+                    "fitbuds_AMAZON_COGNITO_USER_POOLS": {
+                        "ApiUrl": "https://z2t3lfm4kzazvnq7kulokbi77y.appsync-api.us-east-1.amazonaws.com/graphql",
+                        "Region": "us-east-1",
+                        "AuthMode": "AMAZON_COGNITO_USER_POOLS",
+                        "ClientDatabasePrefix": "fitbuds_AMAZON_COGNITO_USER_POOLS"
+                    }
+                },
                 "CredentialsProvider": {
                     "CognitoIdentity": {
                         "Default": {
@@ -27,23 +48,36 @@ const amplifyconfig = ''' {
                 "Auth": {
                     "Default": {
                         "authenticationFlowType": "USER_SRP_AUTH",
-                        "socialProviders": [],
-                        "usernameAttributes": [],
-                        "signupAttributes": [
-                            "EMAIL"
+                        "mfaConfiguration": "OFF",
+                        "mfaTypes": [
+                            "SMS"
                         ],
                         "passwordProtectionSettings": {
                             "passwordPolicyMinLength": 8,
                             "passwordPolicyCharacters": []
                         },
-                        "mfaConfiguration": "OFF",
-                        "mfaTypes": [
-                            "SMS"
+                        "signupAttributes": [
+                            "EMAIL"
                         ],
+                        "socialProviders": [],
+                        "usernameAttributes": [],
                         "verificationMechanisms": [
                             "EMAIL"
                         ]
                     }
+                }
+            }
+        }
+    },
+    "api": {
+        "plugins": {
+            "awsAPIPlugin": {
+                "fitbuds": {
+                    "endpointType": "GraphQL",
+                    "endpoint": "https://z2t3lfm4kzazvnq7kulokbi77y.appsync-api.us-east-1.amazonaws.com/graphql",
+                    "region": "us-east-1",
+                    "authorizationType": "API_KEY",
+                    "apiKey": "da2-dy6denwljvg3vfn6vey73zx4mm"
                 }
             }
         }

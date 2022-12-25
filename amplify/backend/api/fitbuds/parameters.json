@@ -1,0 +1,11 @@
+{
+  "AppSyncApiName": "fitbuds",
+  "DynamoDBBillingMode": "PAY_PER_REQUEST",
+  "DynamoDBEnableServerSideEncryption": false,
+  "AuthCognitoUserPoolId": {
+    "Fn::GetAtt": [
+      "authfitbudsd9948b5c",
+      "Outputs.UserPoolId"
+    ]
+  }
+}
