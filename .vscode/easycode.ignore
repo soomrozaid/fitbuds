@@ -1,0 +1,16 @@
+node_modules/
+dist/
+vendor/
+cache/
+android/
+web/
+build/
+windows/
+test/
+.*/
+*.min.*
+*.test.*
+*.spec.*
+*.bundle.*
+*.bundle-min.*
+*.log
