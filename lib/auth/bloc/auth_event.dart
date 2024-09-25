@@ -22,9 +22,14 @@ class Authenticate extends AuthEvent {
 
 class ConfirmCredentials extends AuthEvent {
   final String username;
+  final String email;
   final String confirmationCode;
 
-  ConfirmCredentials({required this.username, required this.confirmationCode});
+  ConfirmCredentials({
+    required this.username,
+    required this.email,
+    required this.confirmationCode,
+  });
 }
 
 class ResentConfirmationCode extends AuthEvent {

@@ -17,20 +17,18 @@
 // Generated files can be excluded from analysis in analysis_options.yaml
 // For more info, see: https://dart.dev/guides/language/analysis-options#excluding-code-from-analysis
 
-// ignore_for_file: public_member_api_docs, annotate_overrides, dead_code, dead_codepublic_member_api_docs, depend_on_referenced_packages, file_names, library_private_types_in_public_api, no_leading_underscores_for_library_prefixes, no_leading_underscores_for_local_identifiers, non_constant_identifier_names, null_check_on_nullable_type_parameter, prefer_adjacent_string_concatenation, prefer_const_constructors, prefer_if_null_operators, prefer_interpolation_to_compose_strings, slash_for_doc_comments, sort_child_properties_last, unnecessary_const, unnecessary_constructor_name, unnecessary_late, unnecessary_new, unnecessary_null_aware_assignments, unnecessary_nullable_for_final_variable_declarations, unnecessary_string_interpolations, use_build_context_synchronously
+// ignore_for_file: public_member_api_docs, annotate_overrides, dead_code, dead_codepublic_member_api_docs, depend_on_referenced_packages, file_names, library_private_types_in_public_api, no_leading_underscores_for_library_prefixes, no_leading_underscores_for_local_identifiers, non_constant_identifier_names, null_check_on_nullable_type_parameter, override_on_non_overriding_member, prefer_adjacent_string_concatenation, prefer_const_constructors, prefer_if_null_operators, prefer_interpolation_to_compose_strings, slash_for_doc_comments, sort_child_properties_last, unnecessary_const, unnecessary_constructor_name, unnecessary_late, unnecessary_new, unnecessary_null_aware_assignments, unnecessary_nullable_for_final_variable_declarations, unnecessary_string_interpolations, use_build_context_synchronously
 
 import 'ModelProvider.dart';
-import 'package:amplify_core/amplify_core.dart';
-import 'package:flutter/foundation.dart';
+import 'package:amplify_core/amplify_core.dart' as amplify_core;
 
 
 /** This is an auto generated class representing the ActivityLog type in your schema. */
-@immutable
 class ActivityLog {
   final String id;
   final ActivityType? _type;
   final String? _desc;
-  final TemporalDateTime? _timestamp;
+  final amplify_core.TemporalDateTime? _timestamp;
 
   ActivityType? get type {
     return _type;
@@ -40,15 +38,15 @@ class ActivityLog {
     return _desc;
   }
   
-  TemporalDateTime? get timestamp {
+  amplify_core.TemporalDateTime? get timestamp {
     return _timestamp;
   }
   
   const ActivityLog._internal({required this.id, type, desc, timestamp}): _type = type, _desc = desc, _timestamp = timestamp;
   
-  factory ActivityLog({String? id, ActivityType? type, String? desc, TemporalDateTime? timestamp}) {
+  factory ActivityLog({String? id, ActivityType? type, String? desc, amplify_core.TemporalDateTime? timestamp}) {
     return ActivityLog._internal(
-      id: id == null ? UUID.getUUID() : id,
+      id: id == null ? amplify_core.UUID.getUUID() : id,
       type: type,
       desc: desc,
       timestamp: timestamp);
@@ -77,7 +75,7 @@ class ActivityLog {
     
     buffer.write("ActivityLog {");
     buffer.write("id=" + "$id" + ", ");
-    buffer.write("type=" + (_type != null ? enumToString(_type)! : "null") + ", ");
+    buffer.write("type=" + (_type != null ? amplify_core.enumToString(_type)! : "null") + ", ");
     buffer.write("desc=" + "$_desc" + ", ");
     buffer.write("timestamp=" + (_timestamp != null ? _timestamp!.format() : "null"));
     buffer.write("}");
@@ -85,7 +83,7 @@ class ActivityLog {
     return buffer.toString();
   }
   
-  ActivityLog copyWith({String? id, ActivityType? type, String? desc, TemporalDateTime? timestamp}) {
+  ActivityLog copyWith({String? id, ActivityType? type, String? desc, amplify_core.TemporalDateTime? timestamp}) {
     return ActivityLog._internal(
       id: id ?? this.id,
       type: type ?? this.type,
@@ -93,46 +91,63 @@ class ActivityLog {
       timestamp: timestamp ?? this.timestamp);
   }
   
+  ActivityLog copyWithModelFieldValues({
+    ModelFieldValue<String>? id,
+    ModelFieldValue<ActivityType?>? type,
+    ModelFieldValue<String?>? desc,
+    ModelFieldValue<amplify_core.TemporalDateTime?>? timestamp
+  }) {
+    return ActivityLog._internal(
+      id: id == null ? this.id : id.value,
+      type: type == null ? this.type : type.value,
+      desc: desc == null ? this.desc : desc.value,
+      timestamp: timestamp == null ? this.timestamp : timestamp.value
+    );
+  }
+  
   ActivityLog.fromJson(Map<String, dynamic> json)  
     : id = json['id'],
-      _type = enumFromString<ActivityType>(json['type'], ActivityType.values),
+      _type = amplify_core.enumFromString<ActivityType>(json['type'], ActivityType.values),
       _desc = json['desc'],
-      _timestamp = json['timestamp'] != null ? TemporalDateTime.fromString(json['timestamp']) : null;
+      _timestamp = json['timestamp'] != null ? amplify_core.TemporalDateTime.fromString(json['timestamp']) : null;
   
   Map<String, dynamic> toJson() => {
-    'id': id, 'type': enumToString(_type), 'desc': _desc, 'timestamp': _timestamp?.format()
+    'id': id, 'type': amplify_core.enumToString(_type), 'desc': _desc, 'timestamp': _timestamp?.format()
   };
   
   Map<String, Object?> toMap() => {
-    'id': id, 'type': _type, 'desc': _desc, 'timestamp': _timestamp
+    'id': id,
+    'type': _type,
+    'desc': _desc,
+    'timestamp': _timestamp
   };
 
-  static var schema = Model.defineSchema(define: (ModelSchemaDefinition modelSchemaDefinition) {
+  static var schema = amplify_core.Model.defineSchema(define: (amplify_core.ModelSchemaDefinition modelSchemaDefinition) {
     modelSchemaDefinition.name = "ActivityLog";
     modelSchemaDefinition.pluralName = "ActivityLogs";
     
-    modelSchemaDefinition.addField(ModelFieldDefinition.customTypeField(
+    modelSchemaDefinition.addField(amplify_core.ModelFieldDefinition.customTypeField(
       fieldName: 'id',
       isRequired: true,
-      ofType: ModelFieldType(ModelFieldTypeEnum.string)
+      ofType: amplify_core.ModelFieldType(amplify_core.ModelFieldTypeEnum.string)
     ));
     
-    modelSchemaDefinition.addField(ModelFieldDefinition.customTypeField(
+    modelSchemaDefinition.addField(amplify_core.ModelFieldDefinition.customTypeField(
       fieldName: 'type',
       isRequired: false,
-      ofType: ModelFieldType(ModelFieldTypeEnum.enumeration)
+      ofType: amplify_core.ModelFieldType(amplify_core.ModelFieldTypeEnum.enumeration)
     ));
     
-    modelSchemaDefinition.addField(ModelFieldDefinition.customTypeField(
+    modelSchemaDefinition.addField(amplify_core.ModelFieldDefinition.customTypeField(
       fieldName: 'desc',
       isRequired: false,
-      ofType: ModelFieldType(ModelFieldTypeEnum.string)
+      ofType: amplify_core.ModelFieldType(amplify_core.ModelFieldTypeEnum.string)
     ));
     
-    modelSchemaDefinition.addField(ModelFieldDefinition.customTypeField(
+    modelSchemaDefinition.addField(amplify_core.ModelFieldDefinition.customTypeField(
       fieldName: 'timestamp',
       isRequired: false,
-      ofType: ModelFieldType(ModelFieldTypeEnum.dateTime)
+      ofType: amplify_core.ModelFieldType(amplify_core.ModelFieldTypeEnum.dateTime)
     ));
   });
 }

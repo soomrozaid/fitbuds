@@ -2,17 +2,16 @@ import 'package:amplify_api/amplify_api.dart';
 import 'package:amplify_auth_cognito/amplify_auth_cognito.dart';
 import 'package:amplify_datastore/amplify_datastore.dart';
 import 'package:amplify_flutter/amplify_flutter.dart';
-import 'package:authentication_repository/authentication_repository.dart';
 import 'package:fitbuds/amplifyconfiguration.dart';
 import 'package:fitbuds/auth/auth.dart';
 import 'package:fitbuds/confirmation/confirmation.dart';
+import 'package:fitbuds/home/views/home_page.dart';
 import 'package:fitbuds/loading/loading.dart';
 import 'package:fitbuds/login/login.dart';
-import 'package:fitbuds/home/home.dart';
+import 'package:fitbuds/models/ModelProvider.dart';
 import 'package:fitbuds/password_reset/password_reset.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:user_repository/user_repository.dart';
 
 main() {
   // Bloc.observer = AuthObserver();
@@ -67,9 +66,10 @@ class _AppViewState extends State<AppView> {
       return MultiRepositoryProvider(providers: [
         RepositoryProvider<AuthenticationRepository>(
             create: (BuildContext context) =>
-                AuthenticationRepository(amplify: Amplify)),
+                AuthenticationRepository(Amplify)),
         RepositoryProvider<UserRepository>(
-            create: (BuildContext context) => UserRepository(amplify: Amplify)),
+            create: (BuildContext context) => UserRepository(
+                amplify: Amplify, modelProvider: ModelProvider.instance)),
       ], child: const BlocWrapper());
     }
     return const LoadingView();
@@ -109,19 +109,18 @@ class AuthWrapper extends StatelessWidget {
     return BlocBuilder<AuthBloc, AuthState>(
       builder: (context, state) {
         if (state is AuthenticatedState) {
-          return const HomeScreen();
+          return const HomePage();
         } else if (state is UnauthenticatedState) {
           return LoginPage(
-            errorMessage: state.error,
-          );
+              errorMessage: state.error,
+              newUser: state.newUser,
+              username: state.username);
         } else if (state is LoadingState) {
           return const LoadingView();
         } else if (state is ConfirmCredentialsState) {
-          return ConfirmationView(username: state.username);
+          return ConfirmationView(username: state.username, email: state.email);
         } else if (state is ResetPasswordState) {
-          return PasswordResetScreen(
-            username: state.username,
-          );
+          return PasswordResetScreen(username: state.username);
         } else {
           return const LoginPage();
         }

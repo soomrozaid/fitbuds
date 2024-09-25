@@ -10,6 +10,9 @@ class FitTextField extends StatelessWidget {
   final String hintText;
   final String? errorText;
   final FocusNode? focusNode;
+  final bool? obscureText;
+  final IconData? prefixIconData;
+  final VoidCallback? onTogglePasswordVisibility;
   const FitTextField({
     Key? key,
     this.padding = 8,
@@ -21,6 +24,9 @@ class FitTextField extends StatelessWidget {
     this.hintText = 'Hint Text',
     this.errorText,
     this.focusNode,
+    this.obscureText,
+    this.prefixIconData,
+    this.onTogglePasswordVisibility,
   }) : super(key: key);
 
   @override
@@ -33,15 +39,30 @@ class FitTextField extends StatelessWidget {
         focusNode: focusNode,
         controller: controller,
         onChanged: onChanged,
-        obscureText: hintText.toLowerCase() == 'password',
-        autocorrect: hintText.toLowerCase() == 'password' ||
-            hintText.toLowerCase() == 'username',
+        obscureText: obscureText ?? hintText.toLowerCase() == 'password',
+        autocorrect: false,
         decoration: InputDecoration(
-            // enabledBorder: const OutlineInputBorder(),
+            enabledBorder: const OutlineInputBorder(),
             focusedBorder: const OutlineInputBorder(),
+            prefixIcon: Icon(
+              prefixIconData,
+              color: Colors.grey,
+            ),
+            suffixIcon: hintText.toLowerCase() == 'password'
+                ? IconButton(
+                    icon: Icon(
+                      obscureText == true
+                          ? Icons.visibility
+                          : Icons.visibility_off,
+                      color: Colors.grey,
+                    ),
+                    onPressed: onTogglePasswordVisibility,
+                  )
+                : null,
             hintText: hintText,
-            hintStyle:
-                const TextStyle(fontSize: 18, fontWeight: FontWeight.w200),
+            labelText: hintText,
+            hintStyle: const TextStyle(
+                fontSize: 12, fontWeight: FontWeight.w200, color: Colors.grey),
             contentPadding: const EdgeInsets.all(12),
             errorText: errorText),
       ),

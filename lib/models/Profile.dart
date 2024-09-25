@@ -17,20 +17,18 @@
 // Generated files can be excluded from analysis in analysis_options.yaml
 // For more info, see: https://dart.dev/guides/language/analysis-options#excluding-code-from-analysis
 
-// ignore_for_file: public_member_api_docs, annotate_overrides, dead_code, dead_codepublic_member_api_docs, depend_on_referenced_packages, file_names, library_private_types_in_public_api, no_leading_underscores_for_library_prefixes, no_leading_underscores_for_local_identifiers, non_constant_identifier_names, null_check_on_nullable_type_parameter, prefer_adjacent_string_concatenation, prefer_const_constructors, prefer_if_null_operators, prefer_interpolation_to_compose_strings, slash_for_doc_comments, sort_child_properties_last, unnecessary_const, unnecessary_constructor_name, unnecessary_late, unnecessary_new, unnecessary_null_aware_assignments, unnecessary_nullable_for_final_variable_declarations, unnecessary_string_interpolations, use_build_context_synchronously
+// ignore_for_file: public_member_api_docs, annotate_overrides, dead_code, dead_codepublic_member_api_docs, depend_on_referenced_packages, file_names, library_private_types_in_public_api, no_leading_underscores_for_library_prefixes, no_leading_underscores_for_local_identifiers, non_constant_identifier_names, null_check_on_nullable_type_parameter, override_on_non_overriding_member, prefer_adjacent_string_concatenation, prefer_const_constructors, prefer_if_null_operators, prefer_interpolation_to_compose_strings, slash_for_doc_comments, sort_child_properties_last, unnecessary_const, unnecessary_constructor_name, unnecessary_late, unnecessary_new, unnecessary_null_aware_assignments, unnecessary_nullable_for_final_variable_declarations, unnecessary_string_interpolations, use_build_context_synchronously
 
 import 'ModelProvider.dart';
-import 'package:amplify_core/amplify_core.dart';
+import 'package:amplify_core/amplify_core.dart' as amplify_core;
 import 'package:collection/collection.dart';
-import 'package:flutter/foundation.dart';
 
 
 /** This is an auto generated class representing the Profile type in your schema. */
-@immutable
 class Profile {
   final String? _firstName;
   final String? _lastName;
-  final TemporalDate? _dateOfBirth;
+  final amplify_core.TemporalDate? _dateOfBirth;
   final Gender? _gender;
   final City? _location;
   final UserGym? _gym;
@@ -44,7 +42,7 @@ class Profile {
     return _lastName;
   }
   
-  TemporalDate? get dateOfBirth {
+  amplify_core.TemporalDate? get dateOfBirth {
     return _dateOfBirth;
   }
   
@@ -66,7 +64,7 @@ class Profile {
   
   const Profile._internal({firstName, lastName, dateOfBirth, gender, location, gym, friends}): _firstName = firstName, _lastName = lastName, _dateOfBirth = dateOfBirth, _gender = gender, _location = location, _gym = gym, _friends = friends;
   
-  factory Profile({String? firstName, String? lastName, TemporalDate? dateOfBirth, Gender? gender, City? location, UserGym? gym, List<String>? friends}) {
+  factory Profile({String? firstName, String? lastName, amplify_core.TemporalDate? dateOfBirth, Gender? gender, City? location, UserGym? gym, List<String>? friends}) {
     return Profile._internal(
       firstName: firstName,
       lastName: lastName,
@@ -105,8 +103,8 @@ class Profile {
     buffer.write("firstName=" + "$_firstName" + ", ");
     buffer.write("lastName=" + "$_lastName" + ", ");
     buffer.write("dateOfBirth=" + (_dateOfBirth != null ? _dateOfBirth!.format() : "null") + ", ");
-    buffer.write("gender=" + (_gender != null ? enumToString(_gender)! : "null") + ", ");
-    buffer.write("location=" + (_location != null ? enumToString(_location)! : "null") + ", ");
+    buffer.write("gender=" + (_gender != null ? amplify_core.enumToString(_gender)! : "null") + ", ");
+    buffer.write("location=" + (_location != null ? amplify_core.enumToString(_location)! : "null") + ", ");
     buffer.write("gym=" + (_gym != null ? _gym!.toString() : "null") + ", ");
     buffer.write("friends=" + (_friends != null ? _friends!.toString() : "null"));
     buffer.write("}");
@@ -114,7 +112,7 @@ class Profile {
     return buffer.toString();
   }
   
-  Profile copyWith({String? firstName, String? lastName, TemporalDate? dateOfBirth, Gender? gender, City? location, UserGym? gym, List<String>? friends}) {
+  Profile copyWith({String? firstName, String? lastName, amplify_core.TemporalDate? dateOfBirth, Gender? gender, City? location, UserGym? gym, List<String>? friends}) {
     return Profile._internal(
       firstName: firstName ?? this.firstName,
       lastName: lastName ?? this.lastName,
@@ -125,70 +123,98 @@ class Profile {
       friends: friends ?? this.friends);
   }
   
+  Profile copyWithModelFieldValues({
+    ModelFieldValue<String?>? firstName,
+    ModelFieldValue<String?>? lastName,
+    ModelFieldValue<amplify_core.TemporalDate?>? dateOfBirth,
+    ModelFieldValue<Gender?>? gender,
+    ModelFieldValue<City?>? location,
+    ModelFieldValue<UserGym?>? gym,
+    ModelFieldValue<List<String>?>? friends
+  }) {
+    return Profile._internal(
+      firstName: firstName == null ? this.firstName : firstName.value,
+      lastName: lastName == null ? this.lastName : lastName.value,
+      dateOfBirth: dateOfBirth == null ? this.dateOfBirth : dateOfBirth.value,
+      gender: gender == null ? this.gender : gender.value,
+      location: location == null ? this.location : location.value,
+      gym: gym == null ? this.gym : gym.value,
+      friends: friends == null ? this.friends : friends.value
+    );
+  }
+  
   Profile.fromJson(Map<String, dynamic> json)  
     : _firstName = json['firstName'],
       _lastName = json['lastName'],
-      _dateOfBirth = json['dateOfBirth'] != null ? TemporalDate.fromString(json['dateOfBirth']) : null,
-      _gender = enumFromString<Gender>(json['gender'], Gender.values),
-      _location = enumFromString<City>(json['location'], City.values),
-      _gym = json['gym']?['serializedData'] != null
-        ? UserGym.fromJson(new Map<String, dynamic>.from(json['gym']['serializedData']))
+      _dateOfBirth = json['dateOfBirth'] != null ? amplify_core.TemporalDate.fromString(json['dateOfBirth']) : null,
+      _gender = amplify_core.enumFromString<Gender>(json['gender'], Gender.values),
+      _location = amplify_core.enumFromString<City>(json['location'], City.values),
+      _gym = json['gym'] != null
+          ? json['gym']['serializedData'] != null
+              ? UserGym.fromJson(new Map<String, dynamic>.from(json['gym']['serializedData']))
+              : UserGym.fromJson(new Map<String, dynamic>.from(json['gym']))
         : null,
       _friends = json['friends']?.cast<String>();
   
   Map<String, dynamic> toJson() => {
-    'firstName': _firstName, 'lastName': _lastName, 'dateOfBirth': _dateOfBirth?.format(), 'gender': enumToString(_gender), 'location': enumToString(_location), 'gym': _gym?.toJson(), 'friends': _friends
+    'firstName': _firstName, 'lastName': _lastName, 'dateOfBirth': _dateOfBirth?.format(), 'gender': amplify_core.enumToString(_gender), 'location': amplify_core.enumToString(_location), 'gym': _gym?.toJson(), 'friends': _friends
   };
   
   Map<String, Object?> toMap() => {
-    'firstName': _firstName, 'lastName': _lastName, 'dateOfBirth': _dateOfBirth, 'gender': _gender, 'location': _location, 'gym': _gym, 'friends': _friends
+    'firstName': _firstName,
+    'lastName': _lastName,
+    'dateOfBirth': _dateOfBirth,
+    'gender': _gender,
+    'location': _location,
+    'gym': _gym,
+    'friends': _friends
   };
 
-  static var schema = Model.defineSchema(define: (ModelSchemaDefinition modelSchemaDefinition) {
+  static var schema = amplify_core.Model.defineSchema(define: (amplify_core.ModelSchemaDefinition modelSchemaDefinition) {
     modelSchemaDefinition.name = "Profile";
     modelSchemaDefinition.pluralName = "Profiles";
     
-    modelSchemaDefinition.addField(ModelFieldDefinition.customTypeField(
+    modelSchemaDefinition.addField(amplify_core.ModelFieldDefinition.customTypeField(
       fieldName: 'firstName',
       isRequired: false,
-      ofType: ModelFieldType(ModelFieldTypeEnum.string)
+      ofType: amplify_core.ModelFieldType(amplify_core.ModelFieldTypeEnum.string)
     ));
     
-    modelSchemaDefinition.addField(ModelFieldDefinition.customTypeField(
+    modelSchemaDefinition.addField(amplify_core.ModelFieldDefinition.customTypeField(
       fieldName: 'lastName',
       isRequired: false,
-      ofType: ModelFieldType(ModelFieldTypeEnum.string)
+      ofType: amplify_core.ModelFieldType(amplify_core.ModelFieldTypeEnum.string)
     ));
     
-    modelSchemaDefinition.addField(ModelFieldDefinition.customTypeField(
+    modelSchemaDefinition.addField(amplify_core.ModelFieldDefinition.customTypeField(
       fieldName: 'dateOfBirth',
       isRequired: false,
-      ofType: ModelFieldType(ModelFieldTypeEnum.date)
+      ofType: amplify_core.ModelFieldType(amplify_core.ModelFieldTypeEnum.date)
     ));
     
-    modelSchemaDefinition.addField(ModelFieldDefinition.customTypeField(
+    modelSchemaDefinition.addField(amplify_core.ModelFieldDefinition.customTypeField(
       fieldName: 'gender',
       isRequired: false,
-      ofType: ModelFieldType(ModelFieldTypeEnum.enumeration)
+      ofType: amplify_core.ModelFieldType(amplify_core.ModelFieldTypeEnum.enumeration)
     ));
     
-    modelSchemaDefinition.addField(ModelFieldDefinition.customTypeField(
+    modelSchemaDefinition.addField(amplify_core.ModelFieldDefinition.customTypeField(
       fieldName: 'location',
       isRequired: false,
-      ofType: ModelFieldType(ModelFieldTypeEnum.enumeration)
+      ofType: amplify_core.ModelFieldType(amplify_core.ModelFieldTypeEnum.enumeration)
     ));
     
-    modelSchemaDefinition.addField(ModelFieldDefinition.embedded(
+    modelSchemaDefinition.addField(amplify_core.ModelFieldDefinition.embedded(
       fieldName: 'gym',
       isRequired: false,
-      ofType: ModelFieldType(ModelFieldTypeEnum.embedded, ofCustomTypeName: 'UserGym')
+      ofType: amplify_core.ModelFieldType(amplify_core.ModelFieldTypeEnum.embedded, ofCustomTypeName: 'UserGym')
     ));
     
-    modelSchemaDefinition.addField(ModelFieldDefinition.customTypeField(
+    modelSchemaDefinition.addField(amplify_core.ModelFieldDefinition.customTypeField(
       fieldName: 'friends',
       isRequired: false,
       isArray: true,
-      ofType: ModelFieldType(ModelFieldTypeEnum.collection, ofModelName: describeEnum(ModelFieldTypeEnum.string))
+      ofType: amplify_core.ModelFieldType(amplify_core.ModelFieldTypeEnum.collection, ofModelName: amplify_core.ModelFieldTypeEnum.string.name)
     ));
   });
 }

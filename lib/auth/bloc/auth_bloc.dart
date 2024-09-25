@@ -1,8 +1,9 @@
-import 'package:authentication_repository/authentication_repository.dart';
+import 'package:amplify_auth_cognito/amplify_auth_cognito.dart';
+import 'package:fitbuds/auth/auth.dart';
 import 'package:bloc/bloc.dart';
+import 'package:fitbuds/models/User.dart';
 import 'package:flutter/material.dart';
 import 'package:meta/meta.dart';
-import 'package:user_repository/user_repository.dart';
 
 part 'auth_event.dart';
 part 'auth_state.dart';
@@ -26,168 +27,158 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
 
     on<ResetPasswordVerification>(_onResetPasswordVerification);
 
-    on<ClearUsers>(_onClearUsers);
+    // on<ClearUsers>(_onClearUsers);
+  }
+
+  Future<void> _getUserAndEmitState(Emitter emit) async {
+    User? user = await _userRepo.getUser();
+
+    if (user is! User) {
+      emit(UnauthenticatedState(error: "User does not exist in our records"));
+      return;
+    }
+
+    emit(AuthenticatedState(user));
+    return;
   }
 
   Future<void> _onInitializeAuthentication(
       AuthEvent event, Emitter emit) async {
     emit(LoadingState());
-    AuthResponse _authResponse = await _authRepo.initializeAuthentication();
-    if (!_authResponse.isAuthenticated) {
-      return emit(UnauthenticatedState(error: _authResponse.error));
+    bool _isAuthenticated = await _authRepo.initializeAuthentication();
+    if (!_isAuthenticated) {
+      emit(UnauthenticatedState());
+      return;
     }
 
-    UserResponse _userResponse = await _userRepo.getUser();
-
-    if (!_userResponse.isSuccess) {
-      return emit(UnauthenticatedState(error: _userResponse.error));
-    }
-
-    if (_userResponse.user == null) {
-      return emit(UnauthenticatedState(error: 'User not found'));
-    }
-
-    emit(AuthenticatedState(_userResponse.user!));
+    await _getUserAndEmitState(emit);
+    return;
   }
 
-  Future<void> _onAuthenticate(event, emit) async {
+  Future<void> _onAuthenticate(Authenticate event, emit) async {
     emit(LoadingState());
-    AuthResponse _authResponse;
 
-    // To Create a new user account
     if (event.isNewUser) {
-      _authResponse = await _authRepo.createUserWithEmailAndPassword(
-        name: event.name!,
-        email: event.email!,
-        username: event.username,
-        password: event.password,
-      );
-
-      if (_authResponse.nextStep) {
-        return emit(ConfirmCredentialsState(event.username));
+      if (event.email is! String && event.name is! String) {
+        emit(UnauthenticatedState(
+            error: "Name and Email are required to signup"));
+        return;
       }
 
-      if (!_authResponse.isAuthenticated) {
-        return emit(UnauthenticatedState(error: _authResponse.error));
+      AuthNextSignUpStep? nextSignUpStep =
+          await _authRepo.createUserWithEmailAndPassword(
+              username: event.username,
+              email: event.email!,
+              password: event.password,
+              name: event.name!);
+
+      if (nextSignUpStep is! AuthNextSignUpStep) {
+        emit(UnauthenticatedState(
+            error:
+                "Error occured while sending the confirmation code. Please make sure the email you provided is valid and active."));
+        return;
       }
 
-      UserResponse _userResponse = await _userRepo.createNewUser(
-          username: event.username, email: event.email);
-
-      if (!_userResponse.isSuccess) {
-        return emit(UnauthenticatedState(error: _userResponse.error));
-      }
-
-      if (_userResponse.user == null) {
-        return emit(UnauthenticatedState(error: 'User not found'));
-      }
-
-      emit(AuthenticatedState(_userResponse.user!));
-    } else {
-      _authResponse = await _authRepo.signInWithEmailAndPassword(
-          username: event.username, password: event.password);
-
-      if (_authResponse.nextStep) {
-        return emit(ConfirmCredentialsState(event.username));
-      }
-
-      if (!_authResponse.isAuthenticated) {
-        return emit(UnauthenticatedState(error: _authResponse.error));
-      }
-
-      UserResponse _userResponse = await _userRepo.getUser();
-
-      if (!_userResponse.isSuccess) {
-        return emit(UnauthenticatedState(error: _userResponse.error));
-      }
-
-      if (_userResponse.user == null) {
-        return emit(UnauthenticatedState(error: 'User not found'));
-      }
-
-      emit(AuthenticatedState(_userResponse.user!));
+      emit(ConfirmCredentialsState(
+          username: event.username, email: event.email!));
+      return;
     }
-    print(_authResponse.logs);
+
+    String _authResponse = await _authRepo.signInWithUsernameAndPassword(
+        username: event.username, password: event.password);
+
+    switch (_authResponse) {
+      case "authenticated":
+        await _getUserAndEmitState(emit);
+        return;
+      case "needConfirmationCode":
+        emit(ConfirmCredentialsState(
+            username: event.username, email: event.email!));
+        return;
+      case "userNotFound":
+        emit(UnauthenticatedState(
+            error: "Username does not exist in our record", newUser: true));
+        return;
+      case "Exception":
+      default:
+        emit(UnauthenticatedState(error: "Unexpected error occured"));
+        return;
+    }
   }
 
-  Future<void> _onConfirmCredentials(event, emit) async {
+  Future<void> _onConfirmCredentials(ConfirmCredentials event, emit) async {
     emit(LoadingState());
 
-    AuthResponse _authResponse = await _authRepo.confirmSignUp(
+    bool _authResponse = await _authRepo.confirmSignUp(
         username: event.username, confirmationCode: event.confirmationCode);
 
-    if (!_authResponse.isAuthenticated) {
-      return emit(UnauthenticatedState(error: _authResponse.error));
+    if (!_authResponse) {
+      emit(UnauthenticatedState(
+          error: "Confirmation Code wasn't accepted. Please try again.",
+          username: event.username));
+      return;
     }
 
-    UserResponse _userResponse = await _userRepo.getUser();
+    User? _user = await _userRepo.createNewUser(
+      username: event.username,
+      email: event.email,
+    );
 
-    if (!_userResponse.isSuccess) {
-      return emit(UnauthenticatedState(error: _userResponse.error));
+    if (_user is! User) {
+      emit(UnauthenticatedState(
+          error: "Error while creating a new user record."));
+      return;
     }
 
-    if (_userResponse.user == null) {
-      return emit(UnauthenticatedState(error: 'User not found'));
-    }
-
-    emit(AuthenticatedState(_userResponse.user!));
+    emit(AuthenticatedState(_user));
+    return;
   }
 
   Future<void> _onResentConfirmationCode(event, emit) async {
     emit(LoadingState());
 
-    AuthResponse _authResponse =
-        await _authRepo.resendConfirmationCode(event.username);
+    await _authRepo.resendConfirmationCode(event.username);
 
-    if (_authResponse.nextStep) {
-      return emit(ConfirmCredentialsState(event.username));
-    }
-
-    if (!_authResponse.isAuthenticated) {
-      return emit(UnauthenticatedState(error: _authResponse.error));
-    }
-
-    UserResponse _userResponse = await _userRepo.getUser();
-
-    if (!_userResponse.isSuccess) {
-      return emit(UnauthenticatedState(error: _userResponse.error));
-    }
-
-    if (_userResponse.user == null) {
-      return emit(UnauthenticatedState(error: 'User not found'));
-    }
-
-    return emit(AuthenticatedState(_userResponse.user!));
+    emit(ConfirmCredentialsState(username: event.username, email: event.email));
+    return;
   }
 
   Future<void> _onUnAuthenticate(event, emit) async {
-    emit(LoadingState());
-    await Future.delayed(const Duration(seconds: 3));
-    await _authRepo.signOut();
+    await _authRepo.signOut;
     emit(UnauthenticatedState());
+    return;
   }
 
   Future<void> _onForgetPassword(event, emit) async {
     emit(LoadingState());
-    await Future.delayed(const Duration(seconds: 3));
-    await _authRepo.forgotPassword(event.username);
+    String? response = await _authRepo.forgotPassword(event.username);
+    if (response is String) return emit(UnauthenticatedState(error: response));
     emit(ResetPasswordState(username: event.username));
+    return;
   }
 
-  Future<void> _onResetPasswordVerification(event, emit) async {
+  Future<void> _onResetPasswordVerification(
+      ResetPasswordVerification event, emit) async {
     emit(LoadingState());
-    AuthResponse _response = await _authRepo.resetPasswordVerification(
+    bool _response = await _authRepo.resetPasswordVerification(
       username: event.username,
       password: event.password,
       verificationCode: event.verificationCode,
     );
-    emit(UnauthenticatedState(error: _response.error));
+    if (!_response) {
+      return emit(UnauthenticatedState(
+          error: "Sorry, verification code was not acccepted."));
+    }
+    Authenticate authEvent = Authenticate(
+        username: event.username, password: event.password, isNewUser: false);
+    _onAuthenticate(authEvent, emit);
+    return;
   }
 
-  Future<void> _onClearUsers(event, emit) async {
-    emit(LoadingState());
-    AuthDebugger _debugger = await _authRepo.clearUsersData();
-    print(_debugger.message);
-    emit(UnauthenticatedState(error: _debugger.error));
-  }
+  // Future<void> _onClearUsers(event, emit) async {
+  //   emit(LoadingState());
+  //   AuthDebugger _debugger = await _authRepo.clearUsersData();
+  //   print(_debugger.message);
+  //   emit(UnauthenticatedState(error: _debugger.error));
+  // }
 }

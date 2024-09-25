@@ -3,10 +3,17 @@ import 'package:flutter/material.dart';
 
 class LoginPage extends StatelessWidget {
   final String? errorMessage;
-  const LoginPage({Key? key, this.errorMessage}) : super(key: key);
+  final bool? newUser;
+  final String? username;
+  const LoginPage({Key? key, this.errorMessage, this.newUser, this.username})
+      : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    return LoginView(errorMessage: errorMessage,);
+    return LoginView(
+      errorMessage: errorMessage,
+      newUser: newUser,
+      username: username,
+    );
   }
 }

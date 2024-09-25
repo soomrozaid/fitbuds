@@ -6,8 +6,9 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 
 class ConfirmationView extends StatelessWidget {
   final String username;
+  final String email;
 
-  ConfirmationView({Key? key, required this.username}) : super(key: key);
+  ConfirmationView({Key? key, required this.username, required this.email}) : super(key: key);
 
   final TextEditingController _controller = TextEditingController();
 
@@ -28,14 +29,16 @@ class ConfirmationView extends StatelessWidget {
             focusNode: _focusNode,
           ),
           FitButton.text(
-            text: 'Resend the code',
+              text: 'Resend the code',
               onPressed: () => BlocProvider.of<AuthBloc>(context)
                   .add(ResentConfirmationCode(username))),
           FitButton(
               text: 'Submit',
               onPressed: () => BlocProvider.of<AuthBloc>(context).add(
                   ConfirmCredentials(
-                      username: username, confirmationCode: _controller.text)))
+                      username: username,
+                      email: email,
+                      confirmationCode: _controller.text)))
         ],
       )),
     );
